@@ -1,4 +1,5 @@
 # Charlie Hutty
+# 7/8/19
 
 # Enter your name
 name = input(str("What is your name: "))
