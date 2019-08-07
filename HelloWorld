@@ -1,0 +1,6 @@
+# Charlie Hutty
+
+# Enter your name
+name = input(str("What is your name: "))
+
+print("Hello "+ name)
