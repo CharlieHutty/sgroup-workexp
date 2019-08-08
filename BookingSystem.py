@@ -14,11 +14,9 @@ def UserName():
         username = input("Enter your name: ").lower()
         if username.isalpha():
             break
+        else:
             print("That is not a name")
             print("Try again")
-            username = str(input("Enter your name: "))
-        else:
-            break
 
 
 def RoomToBook():
@@ -90,7 +88,7 @@ def TimeToBook():
             break
 
 
-def CheckBookng():
+def CheckBooking():
     # Open the csv file
     with open('ExistingBookings.csv') as ExistingBookings:
         readCSV = csv.reader(ExistingBookings, delimiter=',')
@@ -111,13 +109,7 @@ def CheckBookng():
 
 
 def FileHandle():
-    # Open the text file
-    f = open("ExistingBookings.txt", "a+")  # Tells the program that were going to be appending, not to overwrite the file
-    f.write("Name: " + username+"\n"+"Room: " + str(roomtobook)+"\n"+"Start Date: " + str(datestart)+"\n"+"End Date: "+str(dateend)+"\n"+"Start Time: "+str(timestart)+"\n"+"End Time: "+str(timeend)+"\n\n")  # This is the format that the information will be appended in
-    f.close()   # Closes the text file
-
-    ##
-
+    # Open the csv
     with open('ExistingBookings.csv', 'a') as ExistingBookings:
         ExistingBookings = csv.writer(ExistingBookings, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
@@ -125,8 +117,20 @@ def FileHandle():
         ExistingBookings.writerow([username, roomtobook, datestart, dateend, timestart, timeend])
 
 def DeleteBookings():
-    
+    with open('ExistingBookings.csv') as ExistingBookings:
+        readCSV = csv.reader(ExistingBookings, delimiter=',')
+        for row in ExistingBookings:
+            print(row)
+    # Open and read the csv
+    print("The top row is 1")
+    rowtodelete = int(input("Please enter the number row you want to delete"))
+    rowtodelete = row[rowtodelete]
 
+    with open('ExistingBookings.csv', 'w') as ExistingBookings:
+        ExistingBookings = csv.writer(ExistingBookings, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+        # Writes the users input to the CSV
+        ExistingBookings.writerow([rowtodelete, " "])
 
 
 
@@ -135,8 +139,8 @@ if __name__ == "__main__":
     RoomToBook()
     DateToBook()
     TimeToBook()
-    CheckBookng()
-
+    CheckBooking()
+    # DeleteBookings()
 
 
 
