@@ -4,8 +4,17 @@
 
 # import modules
 import datetime as dt
+from datetime import date
 import csv
 
+# Menu
+def menu():
+    global userchoice
+    print("1. Create booking")
+    print("2. Delete booking")
+    print("3. View Booking")
+    print("4. Quit")
+    userchoice = input("What would you like to do: ")
 
 def UserName():
     while True:
@@ -34,7 +43,10 @@ def RoomToBook():
 def DateToBook():
     global datestart
     global dateend
+    today = date.today()
+    print("Today's date is: ", today.strftime('%d/%m/%Y'))
     while True:
+
         # This is the date format in which we want the data entered in
         dateformat = '%d/%m/%Y'
         # Allow the user to input what date they would like to book the room
@@ -45,8 +57,11 @@ def DateToBook():
             print("Incorrect format")   # Tells the user that the format is wrong
             # Makes them try again
         else:
-            datestart = datestart.strftime('%d/%m/%Y')  # This takes off the unnecessary parts
-            break # Carries on the program if no errors are found
+            if datestart.date() < today:
+                print("Invalid date")
+            else:
+                datestart = datestart.strftime('%d/%m/%Y')  # This takes off the unnecessary parts
+                break # Carries on the program if no errors are found
 
     while True:
         # Allow the user to enter the date the booking will end
@@ -56,15 +71,20 @@ def DateToBook():
         except ValueError:
             print("Incorrect format")
         else:
-            dateend = dateend.strftime('%d/%m/%Y')  # This takes off the unnecessary parts
-            break
+            if datestart.date() > dateend:   # Throws error
+                print("Enter a valid date")
+            else:
+                dateend = dateend.strftime('%d/%m/%Y')  # This takes off the unnecessary parts
+                break
 
 def TimeToBook():
     global timestart
     global timeend
     # The format we want the time in
     timeformat = '%H%M'
-    timetoday = datetime.now().
+    # The current time
+    timetoday = dt.datetime.today()
+    print("The time now is: ", timetoday.strftime('%H%M'))
     while True:
         # Allow the user to enter the time they would like to book the room
         timestart = input("What time would you like the booking to start? Enter in 24-hour format ")
@@ -73,10 +93,11 @@ def TimeToBook():
         except ValueError:
             print("Incorrect format")
         else:
-            if timestart.time() < today.time():
-
-            timestart = timestart.strftime('%H%M')  # This takes off the unnecessary parts
-            break
+            if timestart.time() < timetoday.time():
+                print("Enter a valid time")
+            else:
+                timestart = timestart.strftime('%H%M')  # This takes off the unnecessary parts
+                break
     # For the end time of the meeting
     while True:
         # Allow the user to enter the time they would like the booking to end
@@ -86,7 +107,8 @@ def TimeToBook():
         except ValueError:
             print("Incorrect format")
         else:
-            if
+            if timeend.time() < timestart.time():
+                print("Enter a valid time")
             timeend = timeend.strftime('%H%M')  # This takes off the unnecessary parts
             break
 
@@ -119,6 +141,12 @@ def FileHandle():
         # Writes the users input to the CSV
         ExistingBookings.writerow([username, roomtobook, datestart, dateend, timestart, timeend])
 
+        delta = (timeend - timestart)
+
+        print('\n Name: ', username, '\n', 'Room Booked: ', roomtobook, '\n', 'Start Date: ', datestart, '\n', 'End Date: ', dateend, '\n', 'Start Time: ', timestart, '\n', 'End Time: ', timeend)
+        print("The meeting is ", delta, "mins long")
+
+
 def DeleteBookings():
     with open('ExistingBookings.csv') as ExistingBookings:
         readCSV = csv.reader(ExistingBookings, delimiter=',')
@@ -135,15 +163,40 @@ def DeleteBookings():
         # Writes the users input to the CSV
         ExistingBookings.writerow([rowtodelete, " "])
 
+def viewbookings():
+    username = input("What is your name: ")
+    # Open the csv file
+    with open('ExistingBookings.csv') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            name = str(row[0])
+            roomtobook = str(row[1])
+            startdate = str(row[2])
+            enddate = str(row[3])
+            starttime = str(row[4])
+            endtime = str(row[5])
+            if name == username:
+                print('\n', "Room: ", roomtobook, '\n', "Start Date: ", startdate, '\n', "End date: ", enddate, '\n', "Start time: ", starttime, '\n', "End time: ", endtime, '\n')
+
+
+
 
 
 if __name__ == "__main__":
-    UserName()
-    RoomToBook()
-    DateToBook()
-    TimeToBook()
-    CheckBooking()
-    # DeleteBookings()
+    while True:
+        menu()
+        if userchoice == '1':
+            UserName()
+            # RoomToBook()
+            DateToBook()
+            TimeToBook()
+            # CheckBooking()
+        elif userchoice == '2':
+            DeleteBookings()
+        elif userchoice == '3':
+            viewbookings()
+        else:
+            break
 
 
 
