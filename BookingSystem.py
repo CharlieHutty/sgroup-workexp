@@ -7,8 +7,6 @@ import datetime as dt
 from datetime import date
 import csv
 import random
-import numpy as np
-import pandas as pd
 
 
 # Menu
@@ -142,7 +140,7 @@ def CheckBooking():
             enddate = row[3]
             starttime = row[4]
             endtime = row[5]
-
+            ID = row[6]
         if str(roomtobook) == str(bookedrooms) and str(datestart_str) <= str(dateend) and str(starttime) <= str(endtime):
             print("Room already booked")
         else:
@@ -150,16 +148,40 @@ def CheckBooking():
             FileHandle()    # Runs the function to put the user details into the csv
 
 def FileHandle():
+    ID = random.randint(0,9999999)
     # Open the csv
     with open('ExistingBookings.csv', 'a') as ExistingBookings:
         ExistingBookings = csv.writer(ExistingBookings, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         # Writes the users input to the CSV
-        ExistingBookings.writerow([username, roomtobook, datestart_str, dateend, timestart_str, timeend])
+        ExistingBookings.writerow([username, roomtobook, datestart_str, dateend, timestart_str, timeend, ID])
 
         print('\n Name: ', username, '\n', 'Room Booked: ', roomtobook, '\n', 'Start Date: ', datestart_str, '\n', 'End Date: ', dateend, '\n', 'Start Time: ', timestart_str, '\n', 'End Time: ', timeend, '\n')
 
-def DeleteBookings():
-    pd.read_csv('ExistingBookings.csv')
+def DeleteBooking():
+    global delRef
+    username = input("Please enter the name of the booking you want to delete: ")
+    with open('ExistingBookings.csv', 'rt') as f:
+        reader = csv.reader(f, delimiter=',')
+        for row in reader:
+            if username in row:
+                username = row[0]
+                roomtobook = row[1]
+                startdate = row[2]
+                enddate = row[3]
+                starttime = row[4]
+                endtime = row[5]
+                ID = row[6]
+                print('\n Name: ', username, '\n', 'Room Booked: ', roomtobook, '\n', 'Start Date: ', startdate, '\n', 'End Date: ', enddate, '\n', 'Start Time: ', starttime, '\n', 'End Time: ', endtime , '\n', 'Number Meeting: ', ID, '\n')
+
+    rowtodelete = input("The number meeting you want to delete: ")
+    with open("ExistingBookings.csv", "r") as f:
+        data = list(csv.reader(f))
+    with open("ExistingBookings.csv", "w", newline='') as f:
+        writer = csv.writer(f)
+        for row in data:
+            if rowtodelete != row[6]:
+                writer.writerow(row)
+    print("Booking successfully deleted.\n")
 
 def viewbookings():
     username = input("What is your name: ")
@@ -175,8 +197,8 @@ def viewbookings():
             endtime = str(row[5])
             if name == username or name.capitalize() == username:   # Allows the user to input the name with a capital letter
                 print('\n', "Room: ", roomtobook, '\n', "Start Date: ", startdate, '\n', "End date: ", enddate, '\n', "Start time: ", starttime, '\n', "End time: ", endtime, '\n')
-        else:
-            print("That is not a name in the list \n")
+            elif name != username or name.capitalize() != username:
+                print("That is not a name in the list \n")
 
 if __name__ == "__main__":
     while True:
@@ -188,7 +210,7 @@ if __name__ == "__main__":
             TimeToBook()
             CheckBooking()
         elif userchoice == '2':
-            DeleteBookings()
+            DeleteBooking()
         elif userchoice == '3':
             viewbookings()
         else:
